@@ -6,20 +6,18 @@ data_event_click<-NULL
 data_event_brush<-NULL
 data_event_hover<-NULL
 data<-NULL
+
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
     
     output$dt_table <- DT::renderDataTable({
         
         mtcars_df <- cbind(carname=row.names(mtcars),mtcars)
-        #browser()
-        if(is.null(data)){
-            data<-mtcars_df  
-        }
+        
         #Si fue un click
         if(!is.null(input$clk$x)){
-            dt <- nearPoints(mtcars_df, input$clk, xvar='wt', yvar='mpg')
-            data <<- rbind(data,dt) %>% dplyr::distinct()
+            data <- nearPoints(mtcars_df, input$clk, xvar='wt', yvar='mpg')
+            #data <<- rbind(data,dt) %>% dplyr::distinct()
         } 
         
         #si fue un brush
@@ -27,17 +25,16 @@ shinyServer(function(input, output) {
             data<- brushedPoints(mtcars_df, input$mbrush, xvar='wt',yvar='mpg')
         }
         
-        #Si NO esta en Nulo - Devolvemos el dataframe
-        #if(!is.null(data)){
-        #    data %>% 
-        #        datatable(selection = 'single')
-        #} else{
-        #    NULL
-        #}
-        data
+        #Si esta nulo, se carga el dataset completo
+        if(is.null(data)){
+            data<-mtcars_df 
+        } else {
+            data
+        }
         
     })
     
+    #Metodo para almacenar los puntos dependiendo la acción
     puntos_pintar <- reactive({ 
         if(!is.null(input$mbrush)){
             df<-brushedPoints(mtcars,input$mbrush,xvar='wt',yvar='mpg')
@@ -79,28 +76,25 @@ shinyServer(function(input, output) {
     
     output$plot <- renderPlot({
         plot(mtcars$wt,mtcars$mpg,xlab = "Peso del Vehiculo", ylab="millas por galon")
-        #out_hover<-NULL
-        #out_click<-NULL
-        #out<-NULL
-        #puntos <-puntos()
+        #Llamamos que determina los puntos a pintar
         puntos_pintar()
         
         if(!is.null(data_event_click)){
             points(data_event_click[,1],data_event_click[,2],
                    col='green',
-                   pch=13,
+                   pch=16,
                    cex=2)}
         
         if(!is.null(data_event_brush)){
             points(data_event_brush[,1],data_event_brush[,2],
                    col='blue',
-                   pch=13,
+                   pch=16,
                    cex=2)}
         
         if(!is.null(data_event_hover)){
             points(data_event_hover[,1],data_event_hover[,2],
                    col='gray',
-                   pch=13,
+                   pch=16,
                    cex=2)} 
         
     })
