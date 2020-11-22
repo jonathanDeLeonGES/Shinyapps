@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+ db:
+  container_name: mysql
+  image: mysql
+  ports:
+   - 3306:3306
+  command: --default-authentication-plugin=mysql_native_password
+  environment:
+   - "MYSQL_ROOT_PASSWORD=root123"
+ rstudio:
+  container_name: rstudio-server
+  image: dceoy/rstudio-server
+  ports:
+   - 8788:8787
+  volumes: 
+   - rstudio-data:/home/rstudio
+  working_dir: /home/rstudio
+  entrypoint: 
+   - /usr/lib/rstudio-server/bin/rserver
+  command: 
+   - --server-daemonize=0
+   - --server-app-armor-enabled=0
+  depends_on:
+   - db
+volumes: 
+  rstudio-data: 
