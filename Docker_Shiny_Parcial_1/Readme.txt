@@ -14,3 +14,4 @@ Contenido en Repositorio:
            de script.
 - Archivo csv usado para cargar datos a tabla: videos.csv.
   ** Nota: En documento se especifica la únión de los tres datasets a un único archivo.
+  - Archivo HTML: ACADEMATICA IT - Dashboard.html
