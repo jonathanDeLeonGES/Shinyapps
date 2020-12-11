@@ -13,7 +13,7 @@ FILE_NAME = "time_series_covid19_confirmed_global.csv"
 #FILE_PATH = "/home/airflow/monitor"
 OUTPUT_TRANSFORM_FILE = '_time_series_covid19_confirmed_global.csv'
 
-dag = DAG('covid_tag', description='Covid19',
+dag = DAG('covid_dag', description='Covid19',
           default_args={
               'owner': 'alvaro.esquivel',
               'depends_on_past': False,
@@ -42,6 +42,7 @@ def transform_func(**kwargs):
     id_var = df.columns[0:4]
     df_unpivot = pd.melt(df, id_vars=id_var, value_vars=nombre_columnas)
     df_unpivot.columns = ['province', 'country', 'lat', 'longitud', 'fecha', 'valor']
+    df_unpivot['fecha'] = pd.to_datetime(df_unpivot['fecha']).dt.strftime('%Y-%m-%d')
     df_unpivot.to_csv(destination_file, index=False)
     os.remove(file_path)
     return destination_file
